@@ -30,6 +30,12 @@ var communityAS = flag.Int("communityASN", 23456,
 var templatePath = flag.String("templateFile", "/etc/bird/conf.orig",
 	"Where to find the template file")
 
+var configPath = flag.String("confFile", "/etc/bird/bird.conf",
+	"Where to write config file")
+
+var sockPath = flag.String("sockFile", "/run/bird/bird.ctl",
+	"Where to write config file")
+
 /*
 Three Communities are used:
 
@@ -193,7 +199,7 @@ func writeBGP(gameIncrementor, X, Y, HitOrMissOnLast int) error {
 	}
 
 	// now reload bird
-	conn, err := net.Dial("unix", "/run/bird/bird.ctl")
+	conn, err := net.Dial("unix", *sockPath)
 	if err != nil {
 		log.Fatalf("Unable to connect to bird %s", err.Error())
 	}
@@ -219,13 +225,13 @@ func resetBird() error {
 	birdConfigOutput := strings.Replace(string(templateBytes),
 		"###COMMUNITY###", "", 1)
 
-	err = ioutil.WriteFile("/etc/bird/bird.conf", []byte(birdConfigOutput), 0640)
+	err = ioutil.WriteFile(*configPath, []byte(birdConfigOutput), 0640)
 	if err != nil {
 		return err
 	}
 
 	// now reload bird
-	conn, err := net.Dial("unix", "/run/bird/bird.ctl")
+	conn, err := net.Dial("unix", *sockPath)
 	if err != nil {
 		log.Fatalf("Unable to connect to bird %s", err.Error())
 	}
@@ -242,7 +248,7 @@ func resetBird() error {
 }
 
 func readCommunities(prefix string) (o []bgpCommunity) {
-	conn, err := net.Dial("unix", "/run/bird/bird.ctl")
+	conn, err := net.Dial("unix", *sockPath)
 	if err != nil {
 		log.Fatalf("Unable to connect to bird %s", err.Error())
 	}
