@@ -193,7 +193,7 @@ func writeBGP(gameIncrementor, X, Y, HitOrMissOnLast int) error {
 	birdConfigOutput := strings.Replace(string(templateBytes),
 		"###COMMUNITY###", templatestring, 1)
 
-	err = ioutil.WriteFile("/etc/bird/bird.conf", []byte(birdConfigOutput), 0640)
+	err = ioutil.WriteFile(*configPath, []byte(birdConfigOutput), 0640)
 	if err != nil {
 		return err
 	}
